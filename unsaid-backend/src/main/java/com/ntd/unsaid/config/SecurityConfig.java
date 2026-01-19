@@ -30,7 +30,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS_POST = {
             "/auth/login",  "/auth/logout", "/auth/introspect",
-            "/api/v1/users/new-user",
+            "/api/v1/users",
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {

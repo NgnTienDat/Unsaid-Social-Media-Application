@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ntd.unsaid.enums.UserRole;
 
+import com.ntd.unsaid.enums.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -57,6 +58,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     UserRole role;
+
+    @Enumerated(EnumType.STRING)
+    UserStatus status;
 
     Instant createdAt;
 
