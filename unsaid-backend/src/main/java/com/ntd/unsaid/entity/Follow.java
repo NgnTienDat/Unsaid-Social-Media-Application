@@ -31,6 +31,7 @@ public class Follow {
     @JoinColumn(name = "following_id", nullable = false)
     User following;
 
+    @Enumerated(EnumType.STRING)
     FollowStatus status;
 
     Instant createdAt;

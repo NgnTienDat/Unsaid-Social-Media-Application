@@ -17,14 +17,15 @@ public enum ErrorCode {
     USER_ALREADY_EXISTED(1002, "User already exists", HttpStatus.CONFLICT),
     UNAUTHENTICATED(1003, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1004, "You dont have permission", HttpStatus.FORBIDDEN),
-    PASSWORD_EXISTED(1005, "Password existed", HttpStatus.BAD_REQUEST),
     ACCOUNT_LOCKED(1006, "Your account is locked", HttpStatus.BAD_REQUEST),
-    UNIVERSITY_NOT_FOUND(1007, "University not found", HttpStatus.NOT_FOUND),
-    MAJOR_GROUP_EMPTY(1008, "Major groups data is empty", HttpStatus.NOT_FOUND),
     INVALID_YEAR_FORMAT(1009, "Invalid year", HttpStatus.BAD_REQUEST),
-    ROLE_NOT_FOUND(1010, "Role not found", HttpStatus.NOT_FOUND),
-    COMMENT_NOT_FOUND(1011, "Comment not found", HttpStatus.NOT_FOUND),
     TOO_MANY_REQUESTS(1012, "Too many requests", HttpStatus.TOO_MANY_REQUESTS),
+    USERNAME_ALREADY_EXISTED(1013, "Username already exists", HttpStatus.CONFLICT),
+    UPLOAD_FILE_FAILED(1014, "Upload file failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    CANNOT_FOLLOW_YOURSELF(1015, "Cannot follow yourself", HttpStatus.BAD_REQUEST),
+    ALREADY_FOLLOWING(1016, "You are already following this user", HttpStatus.BAD_REQUEST),
+    CANNOT_UNFOLLOW_YOURSELF(1017, "Cannot unfollow yourself", HttpStatus.BAD_REQUEST),
+    FOLLOW_NOT_FOUND(1018, "Follow relationship not found", HttpStatus.NOT_FOUND),
 
     // Validation: 2XXX
     INVALID_MESSAGE_KEY(2001, "Invalid Message Key", HttpStatus.BAD_REQUEST),
@@ -32,11 +33,6 @@ public enum ErrorCode {
     INVALID_EMAIL(2003, "Invalid email address" , HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(2004, "Invalid password", HttpStatus.BAD_REQUEST),
     INVALID_NAME(2005, "Invalid name account", HttpStatus.BAD_REQUEST),
-
-    // Connect: 3XXX
-    CRAWL_URL_CONNECTION_ERROR(3001, "Crawl URL Connection Error", HttpStatus.INTERNAL_SERVER_ERROR),
-
-
     ;
 
     private int code;

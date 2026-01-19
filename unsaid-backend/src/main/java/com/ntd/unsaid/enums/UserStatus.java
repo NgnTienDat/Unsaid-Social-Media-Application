@@ -8,7 +8,9 @@ import lombok.Getter;
 public enum UserStatus {
     ACTIVE("ACTIVE"),
     SUSPENDED("SUSPENDED"),
-    DELETED("DELETED");
+    DELETED("DELETED"),
+    PRIVATE("PRIVATE");
+
 
     private final String value;
 }

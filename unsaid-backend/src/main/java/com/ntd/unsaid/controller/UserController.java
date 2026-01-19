@@ -1,6 +1,7 @@
 package com.ntd.unsaid.controller;
 
 import com.ntd.unsaid.dto.request.UserCreationRequest;
+import com.ntd.unsaid.dto.request.UserUpdateRequest;
 import com.ntd.unsaid.dto.response.UserResponse;
 import com.ntd.unsaid.service.UserService;
 import com.ntd.unsaid.utils.ApiResponse;
@@ -10,10 +11,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -27,11 +30,11 @@ public class UserController {
 
     @GetMapping("/health")
     public String healthCheck() {
-        return "User Service is up and running!";
+        return "Unsaid is up and running!";
     }
 
 
-    @PostMapping("/new-user")
+    @PostMapping
     public ResponseEntity<ApiResponse<?>> createUser(@RequestBody @Valid UserCreationRequest userRequest) {
         userService.createUser(userRequest);
 
@@ -43,4 +46,35 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
         return ResponseEntity.ok(ResponseUtils.ok(userService.getCurrentUser(jwt)));
     }
+
+    @PutMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<UserResponse>> updateMyProfile(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestPart("data") @Valid UserUpdateRequest request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar
+    ) {
+        return ResponseEntity.ok(ResponseUtils.ok(userService.updateMyProfile(jwt, request, avatar)));
+    }
+
+
+    @PostMapping("/{id}/follow")
+    public ResponseEntity<ApiResponse<?>> followUser(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("id") String targetUserId
+    ) {
+        userService.followUser(jwt.getSubject(), targetUserId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseUtils.created(null));
+    }
+
+    @DeleteMapping("/{id}/follow")
+    public ResponseEntity<ApiResponse<?>> unfollowUser(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable("id") String targetUserId
+    ) {
+        userService.followUser(jwt.getSubject(), targetUserId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseUtils.created(null));
+    }
+
 }
