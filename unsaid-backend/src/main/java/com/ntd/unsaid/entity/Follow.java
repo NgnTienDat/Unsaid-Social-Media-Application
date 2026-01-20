@@ -8,9 +8,29 @@ import lombok.experimental.FieldDefaults;
 import java.time.Instant;
 
 @Entity
-@Table(name = "follows", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"follower_id", "following_id"}) // Make sure not to have duplicate follow
-})
+@Table(
+        name = "follows",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_follows_follower_following",
+                        columnNames = {"follower_id", "following_id"}
+                )
+        },
+        indexes = {
+                @Index(
+                        name = "idx_follows_follower_id",
+                        columnList = "follower_id"
+                ),
+                @Index(
+                        name = "idx_follows_following_id",
+                        columnList = "following_id"
+                ),
+                @Index(
+                        name = "idx_follows_following_created_at",
+                        columnList = "following_id, created_at"
+                )
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

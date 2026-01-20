@@ -31,7 +31,7 @@ public class PostMedia {
     MediaType mediaType;
 
     @Column(nullable = false)
-    String url;          // S3/MinIO/Cloudinary
+    String url;          // Cloudinary
 
     Integer width;       // optional
     Integer height;      // optional
@@ -42,4 +42,10 @@ public class PostMedia {
     Integer displayOrder;
 
     Instant createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+    }
+
 }

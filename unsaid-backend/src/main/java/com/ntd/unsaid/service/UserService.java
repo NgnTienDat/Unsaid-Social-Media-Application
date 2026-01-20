@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ntd.unsaid.dto.request.UserCreationRequest;
 import com.ntd.unsaid.dto.request.UserUpdateRequest;
+import com.ntd.unsaid.dto.response.FollowerResponse;
 import com.ntd.unsaid.dto.response.UserResponse;
 import com.ntd.unsaid.entity.Follow;
 import com.ntd.unsaid.entity.User;
@@ -15,10 +16,16 @@ import com.ntd.unsaid.exception.AppException;
 import com.ntd.unsaid.mapper.UserMapper;
 import com.ntd.unsaid.repository.FollowRepository;
 import com.ntd.unsaid.repository.UserRepository;
+import com.ntd.unsaid.utils.PageResponse;
+import com.ntd.unsaid.utils.PageResponseUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -26,8 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @Transactional
@@ -169,5 +178,23 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.FOLLOW_NOT_FOUND));
         followRepository.delete(follow);
     }
+
+    @Transactional(readOnly = true)
+    public PageResponse<FollowerResponse> getFollowers(String targetUserId, int page, int size, String type) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<FollowerResponse> pageFollows;
+        if (type.equalsIgnoreCase("followers")) {
+            pageFollows = followRepository.findFollowersDto(targetUserId, pageable);
+        } else if (type.equalsIgnoreCase("following")) {
+            pageFollows = followRepository.findFollowingDto(targetUserId, pageable);
+        } else {
+            throw new AppException(ErrorCode.INVALID_FOLLOW_TYPE);
+        }
+
+
+        return PageResponseUtils.build(pageFollows, Function.identity());
+    }
+
 
 }

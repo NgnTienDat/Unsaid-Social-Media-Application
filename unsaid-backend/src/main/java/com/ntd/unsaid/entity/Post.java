@@ -1,5 +1,6 @@
 package com.ntd.unsaid.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ntd.unsaid.enums.AnonymityLevel;
 import com.ntd.unsaid.enums.PostStatus;
 
@@ -32,8 +33,8 @@ public class Post {
     @JoinColumn(name = "author_id", nullable = false)
     User author;
 
-    @Column(length = 280)
-    @Size(max = 280, message = "Post content must be at most 280 characters")
+    @Column(length = 350)
+    @Size(max = 350, message = "Post content must be at most 350 characters")
     String content;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,6 +43,7 @@ public class Post {
 
     @OneToMany(mappedBy = "parentPost", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonIgnore
     List<Post> childPosts = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,8 +60,13 @@ public class Post {
     )
     Post repostOf;
 
+    @Enumerated(EnumType.STRING)
     PostStatus status;
+
+    @Enumerated(EnumType.STRING)
     PostVisibility postVisibility;
+
+    @Enumerated(EnumType.STRING)
     AnonymityLevel anonymityLevel;
 
     @Min(value = 0, message = "Reply count must be non-negative")

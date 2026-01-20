@@ -2,9 +2,11 @@ package com.ntd.unsaid.controller;
 
 import com.ntd.unsaid.dto.request.UserCreationRequest;
 import com.ntd.unsaid.dto.request.UserUpdateRequest;
+import com.ntd.unsaid.dto.response.FollowerResponse;
 import com.ntd.unsaid.dto.response.UserResponse;
 import com.ntd.unsaid.service.UserService;
 import com.ntd.unsaid.utils.ApiResponse;
+import com.ntd.unsaid.utils.PageResponse;
 import com.ntd.unsaid.utils.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -57,7 +59,21 @@ public class UserController {
     }
 
 
-    @PostMapping("/{id}/follow")
+
+    @GetMapping("/{id}/follows")
+    public ResponseEntity<ApiResponse<?>> getFollowers(
+            @PathVariable("id") String targetUserId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "followers") String type
+    ) {
+        return ResponseEntity.ok(
+                ResponseUtils.ok(userService.getFollowers(targetUserId, page, size, type))
+        );
+    }
+
+
+    @PostMapping("/{id}/follows")
     public ResponseEntity<ApiResponse<?>> followUser(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") String targetUserId
@@ -67,14 +83,15 @@ public class UserController {
                 .body(ResponseUtils.created(null));
     }
 
-    @DeleteMapping("/{id}/follow")
+    @DeleteMapping("/{id}/follows")
     public ResponseEntity<ApiResponse<?>> unfollowUser(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") String targetUserId
     ) {
-        userService.followUser(jwt.getSubject(), targetUserId);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseUtils.created(null));
+        userService.unfollowUser(jwt.getSubject(), targetUserId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseUtils.ok(null));
     }
+
 
 }
