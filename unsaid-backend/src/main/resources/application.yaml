@@ -20,7 +20,11 @@ spring:
           batch_size: 25
         order_inserts: true
         order_updates: true
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 200MB
 auth:
   signer-key: ${SIGNER_KEY}
   valid-duration: 29

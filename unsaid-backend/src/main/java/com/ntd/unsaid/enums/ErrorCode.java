@@ -26,6 +26,13 @@ public enum ErrorCode {
     ALREADY_FOLLOWING(1016, "You are already following this user", HttpStatus.BAD_REQUEST),
     CANNOT_UNFOLLOW_YOURSELF(1017, "Cannot unfollow yourself", HttpStatus.BAD_REQUEST),
     FOLLOW_NOT_FOUND(1018, "Follow relationship not found", HttpStatus.NOT_FOUND),
+    MEDIA_LIMIT_EXCEEDED(1019, "Media limit exceeded, at most 10 files", HttpStatus.BAD_REQUEST),
+    POST_NOT_FOUND(1020, "Post not found", HttpStatus.NOT_FOUND),
+    VIDEO_DURATION_EXCEEDED(1021, "Video duration exceeded", HttpStatus.BAD_REQUEST),
+    MEDIA_UPLOAD_FAILED(1022, "Media upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    POST_CONTENT_OR_MEDIA_REQUIRED(1023, "Post content or media is required", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE(1024, "File size is too large", HttpStatus.BAD_REQUEST),
+    INVALID_FOLLOW_TYPE(1025, "Invalid follow type", HttpStatus.BAD_REQUEST),
 
     // Validation: 2XXX
     INVALID_MESSAGE_KEY(2001, "Invalid Message Key", HttpStatus.BAD_REQUEST),

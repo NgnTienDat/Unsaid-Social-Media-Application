@@ -1,6 +1,7 @@
 package com.ntd.unsaid.mapper;
 
 import com.ntd.unsaid.dto.request.UserCreationRequest;
+import com.ntd.unsaid.dto.response.FollowerResponse;
 import com.ntd.unsaid.dto.response.UserResponse;
 import com.ntd.unsaid.entity.User;
 import org.mapstruct.Mapper;
@@ -13,4 +14,5 @@ public interface UserMapper {
 
 //    @Mapping(source = "role", target = "role")
     UserResponse toResponse(User user);
+    FollowerResponse toFollowerResponse(User user);
 }

@@ -3,6 +3,7 @@ package com.ntd.unsaid.exception;
 
 import com.ntd.unsaid.enums.ErrorCode;
 import com.ntd.unsaid.utils.ApiResponse;
+import com.ntd.unsaid.utils.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
@@ -84,4 +86,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<?>> handleMaxSize(MaxUploadSizeExceededException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONTENT_TOO_LARGE)
+                .body(ResponseUtils.error(
+                        ErrorCode.FILE_TOO_LARGE.getMessage(),
+                        HttpStatus.CONTENT_TOO_LARGE
+                ));
+    }
+
 }
