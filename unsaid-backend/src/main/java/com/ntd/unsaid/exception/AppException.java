@@ -1,6 +1,6 @@
 package com.ntd.unsaid.exception;
 
-import com.ntd.unsaid.enums.ErrorCode;
+import com.ntd.unsaid.domain.enums.ErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
