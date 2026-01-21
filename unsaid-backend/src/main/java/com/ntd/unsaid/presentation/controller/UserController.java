@@ -36,10 +36,10 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createUser(@RequestBody @Valid UserCreationRequest userRequest) {
-        userService.createUser(userRequest);
+
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseUtils.created(null));
+                .body(ResponseUtils.created(userService.createUser(userRequest)));
     }
 
     @GetMapping("/me")
