@@ -48,7 +48,7 @@ public class UserService {
     Cloudinary cloudinary;
 
     @Transactional
-    public void createUser(UserCreationRequest userCreation) {
+    public UserResponse createUser(UserCreationRequest userCreation) {
         if (this.userRepository.existsByEmail(userCreation.getEmail())) {
             throw new AppException(ErrorCode.USER_ALREADY_EXISTED);
         }
@@ -63,6 +63,7 @@ public class UserService {
         } catch (DataIntegrityViolationException ex) {
             throw new AppException(ErrorCode.USER_ALREADY_EXISTED);
         }
+        return userMapper.toResponse(user);
     }
 
     @Transactional(readOnly = true)

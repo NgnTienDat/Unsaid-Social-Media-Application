@@ -16,7 +16,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "posts")
+@Table(
+        name = "posts",
+        indexes = {
+                @Index(
+                        name = "idx_posts_author_created",
+                        columnList = "author_id, created_at DESC"
+                ),
+                @Index(
+                        name = "idx_posts_status_author_created",
+                        columnList = "status, author_id, created_at DESC"
+                ),
+                @Index(
+                        name = "idx_posts_status_visibility_created",
+                        columnList = "status, post_visibility, created_at DESC"
+                ),
+                @Index(
+                        name = "idx_posts_parent",
+                        columnList = "parent_post_id"
+                ),
+                @Index(
+                        name = "idx_posts_repost",
+                        columnList = "repost_of_id"
+                )
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

@@ -16,7 +16,7 @@ public interface FollowRepository extends JpaRepository<Follow, String> {
     Optional<Follow> findByFollowerIdAndFollowingId(String followerId, String followingId);
 
     @Query("""
-                select new com.ntd.unsaid.dto.response.FollowerResponse(
+                select new com.ntd.unsaid.application.dto.response.FollowerResponse(
                     u.id,
                     u.username,
                     u.fullName,
@@ -33,7 +33,7 @@ public interface FollowRepository extends JpaRepository<Follow, String> {
 
 
     @Query("""
-                select new com.ntd.unsaid.dto.response.FollowerResponse(
+                select new com.ntd.unsaid.application.dto.response.FollowerResponse(
                     u.id,
                     u.username,
                     u.fullName,
