@@ -1,7 +1,7 @@
 package com.ntd.unsaid.exception;
 
 
-import com.ntd.unsaid.enums.ErrorCode;
+import com.ntd.unsaid.domain.enums.ErrorCode;
 import com.ntd.unsaid.utils.ApiResponse;
 import com.ntd.unsaid.utils.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,8 @@
 package com.ntd.unsaid.config;
 
 
+import com.ntd.unsaid.security.CustomJwtDecoder;
+import com.ntd.unsaid.security.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
