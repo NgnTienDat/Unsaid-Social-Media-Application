@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -31,6 +32,12 @@ public interface FollowRepository extends JpaRepository<Follow, String> {
             Pageable pageable
     );
 
+    @Query("""
+                select f.follower.id
+                from Follow f
+                where f.following.id = :followingId
+            """)
+    List<String> findFollowerIdsByFollowingId(@Param("followingId") String followingId);
 
     @Query("""
                 select new com.ntd.unsaid.application.dto.response.FollowerResponse(
