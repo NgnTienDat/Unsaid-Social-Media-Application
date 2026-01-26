@@ -8,6 +8,7 @@ import com.ntd.unsaid.application.dto.response.PostResponse;
 import com.ntd.unsaid.domain.entity.Post;
 import com.ntd.unsaid.domain.entity.PostMedia;
 import com.ntd.unsaid.domain.entity.User;
+import com.ntd.unsaid.domain.event.PostCreatedEvent;
 import com.ntd.unsaid.exception.AppException;
 import com.ntd.unsaid.application.mapper.PostMapper;
 import com.ntd.unsaid.domain.repository.PostRepository;
@@ -15,6 +16,7 @@ import com.ntd.unsaid.domain.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,13 +31,12 @@ public class PostService {
     PostRepository postRepository;
     UserRepository userRepository;
     CloudinaryUploadService cloudinaryUploadService;
+    ApplicationEventPublisher eventPublisher;
     PostMapper postMapper;
 
     @Transactional
     public PostResponse createPost(
-            String userEmail,
-            PostCreationRequest request,
-            List<MultipartFile> mediaFiles
+            String userEmail, PostCreationRequest request, List<MultipartFile> mediaFiles
     ) {
 
         User author = userRepository.findByEmail(userEmail)
@@ -103,6 +104,17 @@ public class PostService {
                 post.getMedia().add(media);
             }
         }
+        // Publish PostCreatedEvent
+        if (post.getParentPost() == null) {
+            eventPublisher.publishEvent(
+                    new PostCreatedEvent(
+                            post.getId(),
+                            post.getAuthor().getId(),
+                            post.getCreatedAt()
+                    )
+            );
+        }
+
         return postMapper.toResponse(post);
     }
 }

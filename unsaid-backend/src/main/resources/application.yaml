@@ -1,3 +1,8 @@
+server:
+  tomcat:
+    threads:
+      max: 200 # Mặc định là 200. Nếu test > 200 req/s đồng thời, queue sẽ đầy.
+               # Với 1000 user + sleep, 200 threads có thể vẫn đủ.
 spring:
   application:
     name: unsaid-backend
@@ -7,15 +12,20 @@ spring:
     username: ${DBMS_USERNAME}
     password: ${DBMS_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
+    hikari:
+      # Số lượng kết nối tối đa đến DB.
+      # PostgreSQL thường chịu được max_connections = 100 mặc định.
+      # Set pool size này lên 50 để tận dụng tối đa.
+      maximum-pool-size: 50
+      minimum-idle: 10
   jpa:
     hibernate:
       ddl-auto: update  # Use 'validate' in production
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false
         jdbc:
           batch_size: 25
         order_inserts: true
@@ -25,6 +35,17 @@ spring:
       enabled: true
       max-file-size: 50MB
       max-request-size: 200MB
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      database: 0
+      lettuce:
+        pool:
+          max-active: 50   # Số kết nối tối đa cùng lúc
+          max-idle: 10     # Số kết nối rảnh tối đa giữ lại
+          min-idle: 5      # Số kết nối rảnh tối thiểu
+          max-wait: 1000ms # Thời gian chờ tối đa nếu pool bị đầy
 auth:
   signer-key: ${SIGNER_KEY}
   valid-duration: 29
@@ -34,3 +55,4 @@ cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
+
