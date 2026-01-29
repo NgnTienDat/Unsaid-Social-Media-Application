@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, String> {
     @Query("""
@@ -60,4 +63,11 @@ public interface PostRepository extends JpaRepository<Post, String> {
             @Param("scanLimit") int scanLimit,
             Pageable pageable
     );
+
+
+    List<Post> findAllByIdIn(Set<String> postIds);
+
+    List<Post> findByAuthorId(String authorId, Pageable pageable);
+
+
 }

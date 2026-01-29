@@ -33,16 +33,28 @@ public class SocialFeedController {
                         feedService.getPageFeed(jwt.getSubject(), page, size)));
     }
 
+//    @GetMapping("/slice")
+//    public ResponseEntity<ApiResponse<?>> getSliceFeed(
+////            @AuthenticationPrincipal Jwt jwt,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "20") int size,
+//            @RequestParam("id") String userId
+//    ) {
+//
+//        return ResponseEntity.ok(
+//                ResponseUtils.ok(feedService.getSliceFeed(userId, page, size)));
+//    }
+
+
     @GetMapping("/slice")
     public ResponseEntity<ApiResponse<?>> getSliceFeed(
 //            @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
             @RequestParam("id") String userId
     ) {
 
         return ResponseEntity.ok(
-                ResponseUtils.ok(feedService.getSliceFeed(userId, page, size)));
+                ResponseUtils.ok(feedService.getFeed(userId, page)));
     }
 
 

@@ -17,11 +17,9 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class PostEventListener {
     FeedService feedService;
 
-    @Async
+    @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        // 1 push to author's feed and author's post timeline (optional, depending on design)
-        // 2 fan out to followers
         feedService.fanOutToFollowers(event.postId(), event.authorId(), event.createdAt().toEpochMilli());
     }
 }

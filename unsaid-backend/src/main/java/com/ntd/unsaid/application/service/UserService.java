@@ -16,6 +16,8 @@ import com.ntd.unsaid.exception.AppException;
 import com.ntd.unsaid.application.mapper.UserMapper;
 import com.ntd.unsaid.domain.repository.FollowRepository;
 import com.ntd.unsaid.domain.repository.UserRepository;
+import com.ntd.unsaid.infrastructure.caching.RedisRepository;
+import com.ntd.unsaid.utils.Constant;
 import com.ntd.unsaid.utils.PageResponse;
 import com.ntd.unsaid.utils.PageResponseUtils;
 import lombok.AccessLevel;
@@ -43,9 +45,11 @@ import java.util.function.Function;
 public class UserService {
     UserRepository userRepository;
     FollowRepository followRepository;
+    RedisRepository redisRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     Cloudinary cloudinary;
+
 
     @Transactional
     public UserResponse createUser(UserCreationRequest userCreation) {
@@ -157,6 +161,10 @@ public class UserService {
                 .build();
 
         followRepository.save(follow);
+//        if (followRepository
+//                    .findFollowerIdsByFollowingId(following.getId())
+//                    .size() > Constant.CELEBRITY_FOLLOWER_THRESHOLD)
+//            redisRepository.pushToFollowingCelebs(follower.getId(), following.getId());
     }
 
 

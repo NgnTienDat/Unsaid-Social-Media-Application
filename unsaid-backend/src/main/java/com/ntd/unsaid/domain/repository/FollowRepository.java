@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface FollowRepository extends JpaRepository<Follow, String> {
@@ -55,4 +56,30 @@ public interface FollowRepository extends JpaRepository<Follow, String> {
             Pageable pageable
     );
 
+
+    @Query(value = """
+                SELECT following_id
+                FROM follows
+                WHERE follower_id = :followerId
+                AND following_id = ANY(:ids)
+            """, nativeQuery = true)
+    Set<String> findFollowingIds(@Param("followerId") String followerId, @Param("ids") String[] ids);
+
+    @Query(value = """
+                SELECT following_id
+                FROM follows
+                WHERE follower_id = :followerId
+            """, nativeQuery = true)
+    Set<String> findFollowingIds(@Param("followerId") String followerId);
+
+    @Query(value = """
+                SELECT f.following_id 
+                FROM follows f
+                JOIN users u ON f.following_id = u.id
+                WHERE f.follower_id = :followerId 
+                  AND u.follower_count > 3000
+            """, nativeQuery = true)
+    List<String> findFollowedCelebrityIds(@Param("followerId") String followerId);
+
+    long countFollowerIdsByFollowingId(String followingId);
 }
