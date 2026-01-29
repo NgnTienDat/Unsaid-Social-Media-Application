@@ -64,6 +64,8 @@ public class User {
 
     Instant createdAt;
 
+    Integer followerCount;
+
 
     // mappedBy trỏ tới tên biến "author" trong class Post
     // cascade = CascadeType.ALL sẽ lan truyền lệnh Delete từ User xuống Post

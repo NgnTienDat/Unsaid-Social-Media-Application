@@ -13,6 +13,7 @@ import com.ntd.unsaid.exception.AppException;
 import com.ntd.unsaid.application.mapper.PostMapper;
 import com.ntd.unsaid.domain.repository.PostRepository;
 import com.ntd.unsaid.domain.repository.UserRepository;
+import com.ntd.unsaid.infrastructure.caching.RedisRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +31,7 @@ import java.util.List;
 public class PostService {
     PostRepository postRepository;
     UserRepository userRepository;
+    RedisRepository redisRepository;
     CloudinaryUploadService cloudinaryUploadService;
     ApplicationEventPublisher eventPublisher;
     PostMapper postMapper;
@@ -104,8 +106,10 @@ public class PostService {
                 post.getMedia().add(media);
             }
         }
+
         // Publish PostCreatedEvent
         if (post.getParentPost() == null) {
+            redisRepository.savePostToCache(post.getId(), postMapper.toFeedPostDTO(post));
             eventPublisher.publishEvent(
                     new PostCreatedEvent(
                             post.getId(),

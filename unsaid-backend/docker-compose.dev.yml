@@ -4,7 +4,7 @@ services:
     container_name: unsaid-db
     restart: unless-stopped
     env_file:
-      - .env.dev
+      - .env
     volumes:
       - ./volumes/postgres/data:/var/lib/postgresql/data
     ports:
@@ -14,7 +14,7 @@ services:
       -c max_connections=200 
       -c shared_buffers=256MB 
       -c effective_cache_size=768MB 
-      -c work_mem=4MB
+      -c work_mem=8MB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -40,8 +40,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 2G
+          cpus: '4.0'
+          memory: 4G
     ports:
       - "8080:8080"
     networks:

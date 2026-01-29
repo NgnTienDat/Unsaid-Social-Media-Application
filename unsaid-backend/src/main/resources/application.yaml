@@ -1,7 +1,7 @@
 server:
   tomcat:
     threads:
-      max: 200 # Mặc định là 200. Nếu test > 200 req/s đồng thời, queue sẽ đầy.
+      max: 1000 # Mặc định là 200. Nếu test > 200 req/s đồng thời, queue sẽ đầy.
                # Với 1000 user + sleep, 200 threads có thể vẫn đủ.
 spring:
   application:
@@ -42,7 +42,7 @@ spring:
       database: 0
       lettuce:
         pool:
-          max-active: 50   # Số kết nối tối đa cùng lúc
+          max-active: 100   # Số kết nối tối đa cùng lúc
           max-idle: 10     # Số kết nối rảnh tối đa giữ lại
           min-idle: 5      # Số kết nối rảnh tối thiểu
           max-wait: 1000ms # Thời gian chờ tối đa nếu pool bị đầy
