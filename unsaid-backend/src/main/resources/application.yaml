@@ -1,8 +1,8 @@
 server:
   tomcat:
     threads:
-      max: 1000 # Mặc định là 200. Nếu test > 200 req/s đồng thời, queue sẽ đầy.
-               # Với 1000 user + sleep, 200 threads có thể vẫn đủ.
+      max: 200  # Reduced from 1000 - too many threads cause CPU context switching overhead
+
 spring:
   application:
     name: unsaid-backend

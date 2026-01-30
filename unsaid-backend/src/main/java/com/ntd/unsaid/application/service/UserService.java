@@ -161,10 +161,10 @@ public class UserService {
                 .build();
 
         followRepository.save(follow);
-//        if (followRepository
-//                    .findFollowerIdsByFollowingId(following.getId())
-//                    .size() > Constant.CELEBRITY_FOLLOWER_THRESHOLD)
-//            redisRepository.pushToFollowingCelebs(follower.getId(), following.getId());
+        if (followRepository
+                    .findFollowerIdsByFollowingId(following.getId())
+                    .size() > Constant.CELEBRITY_FOLLOWER_THRESHOLD)
+            redisRepository.pushToFollowingCelebs(follower.getId(), following.getId());
     }
 
 

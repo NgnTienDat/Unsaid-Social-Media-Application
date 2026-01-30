@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,8 @@ public class FeedService {
     private record PostScore(String postId, Double score) {
     }
 
-    public void fanOutToFollowers(String postId, String authorId, long createdAt) {
-        boolean isCelebrity = isCelebrity(authorId);
+    public void fanOutToFollowers(String postId, String authorId, int followerCount, long createdAt) {
+        boolean isCelebrity = followerCount >= Constant.CELEBRITY_FOLLOWER_THRESHOLD;
         redisRepository.pushToUserFeed(authorId, postId, createdAt);
         if (isCelebrity) {
             redisRepository.pushToPostTimeline(authorId, postId, createdAt);
@@ -68,20 +69,18 @@ public class FeedService {
         // 2. Get followed celeb IDs, key: user:following_celebs:{userId}
         Set<String> celebIds = redisRepository.getFollowingCelebs(userId);
         if (celebIds == null || celebIds.isEmpty()) {
-            System.out.println("No followed celebs in cache, fetching all celebs...");
             Set<String> allCelebrityIds = redisRepository.getCelebrityUserIds();
             celebIds = getFollowingIds(userId, allCelebrityIds);
         }
 
         // 3. Fetch celeb postIds from celeb's post timeline
-        List<Object> rawResults = redisRepository.getCelebrityPosts(celebIds, PAGE_SIZE);
+        List<Object> rawResults = redisRepository.getCelebrityPosts(celebIds, 2);
 
         for (Object obj : rawResults) {
             @SuppressWarnings("unchecked")
             Set<ZSetOperations.TypedTuple<String>> posts =
                     (Set<ZSetOperations.TypedTuple<String>>) obj;
             if (posts == null) continue;
-
             for (var t : posts) {
                 merged.add(new PostScore(t.getValue(), t.getScore()));
             }
@@ -99,12 +98,12 @@ public class FeedService {
             }
             if (orderedPostIds.size() == PAGE_SIZE) break;
         }
-
         if (orderedPostIds.isEmpty()) return Collections.emptyList();
 
 
         // 5. Thử lấy nội dung bài viết từ Redis Cache (MGET)
         // Giả sử hàm này trả về Map<String, FeedPostDTO>
+
         Map<String, FeedPostDTO> cachedPostsMap = redisRepository.getPostsFromCacheMGET(orderedPostIds);
 
         List<String> missingIds = orderedPostIds.stream()
@@ -112,7 +111,8 @@ public class FeedService {
                 .toList();
 
         if (!missingIds.isEmpty()) {
-            List<Post> dbPosts = postRepository.findAllByIdIn(new HashSet<>(missingIds));
+            // Use optimized query with JOIN FETCH to avoid N+1 problem
+            List<Post> dbPosts = postRepository.findAllByIdInWithDetails(new HashSet<>(missingIds));
             for (Post post : dbPosts) {
                 FeedPostDTO dto = postMapper.toFeedPostDTO(post);
                 redisRepository.savePostToCache(post.getId(), dto);
@@ -126,34 +126,61 @@ public class FeedService {
                 .toList();
     }
 
+    public List<?> getFeedV2(String userId, int page) {
+
+        int start = (page - 1) * PAGE_SIZE;
+        int end = start + PAGE_SIZE - 1;
+
+        List<String> postIds = getFeedPostIds(userId, page);
+        if (postIds.isEmpty()) return Collections.emptyList();
 
 
-    @Transactional(readOnly = true)
-    public PageResponse<PostResponse> getPageFeed(String userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        // 5. Thử lấy nội dung bài viết từ Redis Cache (MGET)
+        // Giả sử hàm này trả về Map<String, FeedPostDTO>
 
-        Page<Post> posts = postRepository.findFeedPosts(
-                userId,
-                pageable
-        );
+        Map<String, FeedPostDTO> cachedPostsMap = redisRepository.getPostsFromCacheMGET(postIds);
 
-        return PageResponseUtils.build(posts, postMapper::toResponse);
+        return postIds.stream()
+                .map(cachedPostsMap::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+//        return orderedPostIds.stream()
+//                .map(cachedPostsMap::get)
+//                .filter(Objects::nonNull)
+//                .toList();
     }
 
+    public List<String> getFeedPostIds(String userId, int page) {
+        String finalKey = RedisKeys.userFeedComputed(userId);
 
+        // 1. Kiểm tra xem key computed đã có sẵn chưa (Hit Cache)
+        if (redisRepository.existKey(finalKey)) {
+            return redisRepository.getPostIdsFromFeedComputed(userId, page);
+        }
+
+        // 2. Cache Miss: Tính toán bằng ZUNIONSTORE
+
+        // Lấy key Feed bạn bè
+        String userFeedKey = RedisKeys.userFeed(userId);
+
+        // Lấy list key Celeb feeds
+        Set<String> celebIds = redisRepository.getFollowingCelebs(userId);
+        List<String> keysToMerge = new ArrayList<>();
+        keysToMerge.add(userFeedKey);
+        celebIds.forEach(id -> keysToMerge.add(RedisKeys.userPostTimeline(id)));
+
+        // GỌI REDIS MERGE (Thao tác thay thế Java Merge)
+        // ZUNIONSTORE finalKey numKeys key1 key2 ... AGGREGATE MAX
+        redisRepository.unionMergeFeeds(userFeedKey, keysToMerge, finalKey);
+
+        // 3. Lấy kết quả
+        return redisRepository.getPostIdsFromFeedComputed(userId, page);
+    }
 
     public Set<String> getFollowingIds(String userId, Set<String> targetIds) {
         // Parse List to Array to be compatible with ANY(?)
         String[] idsArray = targetIds.toArray(new String[0]);
         return followRepository.findFollowingIds(userId, idsArray);
-    }
-
-    public List<String> getFollowingIdsV2(String userId, Set<String> targetIds) {
-        return followRepository.findFollowingIds(userId).stream().filter(targetIds::contains).toList();
-    }
-
-    public boolean isCelebrity(String userId) {
-        List<String> followerIds = followRepository.findFollowerIdsByFollowingId(userId);
-        return followerIds.size() >= Constant.CELEBRITY_FOLLOWER_THRESHOLD;
     }
 }

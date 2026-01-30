@@ -53,7 +53,7 @@ public class Post {
     @Column(name = "id", nullable = false, length = 36)
     String id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     User author;
 

@@ -67,6 +67,18 @@ public interface PostRepository extends JpaRepository<Post, String> {
 
     List<Post> findAllByIdIn(Set<String> postIds);
 
+    /**
+     * Optimized query with JOIN FETCH to avoid N+1 problem.
+     * Fetches posts with author and media in a single query.
+     */
+    @Query("""
+        SELECT DISTINCT p FROM Post p
+        LEFT JOIN FETCH p.author
+        LEFT JOIN FETCH p.media
+        WHERE p.id IN :postIds
+    """)
+    List<Post> findAllByIdInWithDetails(@Param("postIds") Set<String> postIds);
+
     List<Post> findByAuthorId(String authorId, Pageable pageable);
 
 

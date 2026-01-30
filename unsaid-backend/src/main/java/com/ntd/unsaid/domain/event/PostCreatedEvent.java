@@ -5,5 +5,6 @@ import java.time.Instant;
 public record PostCreatedEvent(
         String postId,
         String authorId,
+        int followerCount,
         Instant createdAt
 ) {}
