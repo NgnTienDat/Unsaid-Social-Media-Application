@@ -3,7 +3,8 @@ Designed as a platform for real-time conversation and sharing. Its posts are mai
 
 ## 🏗️ System Architecture
 <!-- <img width="1206" height="727" alt="image" src="https://github.com/user-attachments/assets/6c7fc36f-5c2b-4581-9a96-419dced309b6" /> -->
-<img width="1484" height="810" alt="image" src="https://github.com/user-attachments/assets/74babe54-1d00-43b3-8f96-f12e9f4eb7c8" />
+![Uploading image.png…]()
+
 
 
 
