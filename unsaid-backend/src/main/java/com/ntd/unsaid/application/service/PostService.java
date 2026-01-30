@@ -114,6 +114,7 @@ public class PostService {
                     new PostCreatedEvent(
                             post.getId(),
                             post.getAuthor().getId(),
+                            post.getAuthor().getFollowerCount(),
                             post.getCreatedAt()
                     )
             );

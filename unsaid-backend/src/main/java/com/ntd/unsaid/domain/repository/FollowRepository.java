@@ -17,6 +17,13 @@ import java.util.Set;
 public interface FollowRepository extends JpaRepository<Follow, String> {
     Optional<Follow> findByFollowerIdAndFollowingId(String followerId, String followingId);
 
+    /**
+     * Optimized: Count followers instead of fetching all IDs.
+     * This is much faster for celebrity check.
+     */
+    @Query("SELECT COUNT(f) FROM Follow f WHERE f.following.id = :followingId")
+    long countFollowersByFollowingId(@Param("followingId") String followingId);
+
     @Query("""
                 select new com.ntd.unsaid.application.dto.response.FollowerResponse(
                     u.id,

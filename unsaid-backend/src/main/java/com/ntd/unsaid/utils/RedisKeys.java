@@ -5,7 +5,7 @@ public final class RedisKeys {
     public static final String FEED_POST_VERSION = "v1";
     public static final String USER_FEED_VERSION = "v1";
 
-    public static String feedPost(String postId) {
+    public static String postData(String postId) {
         return "post:data:" + FEED_POST_VERSION + ":" + postId;
     }
 
@@ -13,7 +13,11 @@ public final class RedisKeys {
         return "feed:user:" + USER_FEED_VERSION + ":" + userId;
     }
 
-    public static String authorTimeline(String authorId) {
-        return "posts:user:v1:" + authorId;
+    public static String userFeedComputed(String userId) {
+        return "feed:computed:" + USER_FEED_VERSION + ":" + userId;
+    }
+
+    public static String userPostTimeline(String authorId) {
+        return "posts:user:" + authorId;
     }
 }

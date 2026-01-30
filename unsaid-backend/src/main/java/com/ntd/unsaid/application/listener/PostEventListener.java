@@ -20,6 +20,10 @@ public class PostEventListener {
     @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
-        feedService.fanOutToFollowers(event.postId(), event.authorId(), event.createdAt().toEpochMilli());
+        feedService.fanOutToFollowers(
+                event.postId(),
+                event.authorId(),
+                event.followerCount(),
+                event.createdAt().toEpochMilli());
     }
 }

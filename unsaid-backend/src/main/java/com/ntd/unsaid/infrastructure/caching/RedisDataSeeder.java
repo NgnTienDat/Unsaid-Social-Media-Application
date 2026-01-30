@@ -13,10 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -42,12 +38,12 @@ public class RedisDataSeeder {
     PostRepository postRepository;
     FollowRepository followRepository;
     UserRepository userRepository;
-    RedisRepository redisRepository;
+    // RedisRepository redisRepository;
     PostMapper postMapper;
 
 
     public void seedRedisForStressTest() {
-        log.info("Bắt đầu nạp dữ liệu mục tiêu cho 5000 users...");
+        log.info("Bắt đầu nạp dữ liệu mục tiêu cho 2041 users...");
 
         // 1. Lấy danh sách 100 Celebs và 4900 Normal Users
         List<User> celebs = userRepository.findTopCelebs(3000, PageRequest.of(0, 41));
@@ -93,7 +89,7 @@ public class RedisDataSeeder {
                     if (!posts.isEmpty()) {
 
                         for (Post p : posts) {
-                            String postKey = RedisKeys.feedPost(p.getId());
+                            String postKey = RedisKeys.postData(p.getId());
                             FeedPostDTO dto = postMapper.toFeedPostDTO(p);
 
                             byte[] serializedKey = serializer.serialize(postKey);
@@ -103,7 +99,7 @@ public class RedisDataSeeder {
                             connection.setEx(serializedKey, Duration.ofHours(6).getSeconds(), serializedValue);
                         }
 
-                        byte[] outboxKey = serializer.serialize("posts:user:" + userId);
+                        byte[] outboxKey = serializer.serialize(RedisKeys.userPostTimeline(userId));
                         for (Post p : posts) {
                             connection.zAdd(outboxKey, p.getCreatedAt().toEpochMilli(), serializer.serialize(p.getId()));
                         }
@@ -127,7 +123,7 @@ public class RedisDataSeeder {
                             // --- [MỚI] CHECK LỌC TẠI ĐÂY ---
                             // Chỉ nạp vào Redis Inbox nếu người follower này CŨNG nằm trong danh sách test
                             if (targetUserIdSet.contains(fId)) {
-                                byte[] inboxKey = serializer.serialize("feed:user:" + fId);
+                                byte[] inboxKey = serializer.serialize(RedisKeys.userFeed(fId));
                                 for (Post p : posts) {
                                     connection.zAdd(inboxKey, p.getCreatedAt().toEpochMilli(), serializer.serialize(p.getId()));
                                 }
