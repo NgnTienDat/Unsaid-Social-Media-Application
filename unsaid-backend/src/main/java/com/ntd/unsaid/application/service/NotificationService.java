@@ -42,7 +42,7 @@ public class NotificationService {
                     .build();
 
             messagingTemplate.convertAndSendToUser(
-                    followerId,
+                    followerId, // MUST match Principal name. Currently, using email as Principal name
                     "/queue/post/notifications",
                     notification
             );

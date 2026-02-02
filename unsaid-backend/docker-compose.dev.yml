@@ -58,6 +58,19 @@ services:
     networks:
       - unsaid-network
 
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: unsaid-rabbitmq
+    restart: unless-stopped
+    volumes:
+      - ./volumes/rabbitmq/data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # UI
+    environment:
+      RABBITMQ_DEFAULT_USER: unsaid
+      RABBITMQ_DEFAULT_PASS: unsaid
+
 networks:
   unsaid-network:
     driver: bridge

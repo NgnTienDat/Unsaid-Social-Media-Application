@@ -46,6 +46,18 @@ spring:
           max-idle: 10     # Số kết nối rảnh tối đa giữ lại
           min-idle: 5      # Số kết nối rảnh tối thiểu
           max-wait: 1000ms # Thời gian chờ tối đa nếu pool bị đầy
+  rabbitmq:
+    host: localhost      # Nếu chạy app từ IDE. Dùng 'rabbitmq' nếu chạy app bằng Docker
+    port: 5672
+    username: unsaid     # Phải khớp với RABBITMQ_DEFAULT_USER trong docker-compose
+    password: unsaid
+    listener:
+      simple:
+        prefetch: 10
+        concurrency: 2
+        max-concurrency: 5
+
+
 auth:
   signer-key: ${SIGNER_KEY}
   valid-duration: 29
