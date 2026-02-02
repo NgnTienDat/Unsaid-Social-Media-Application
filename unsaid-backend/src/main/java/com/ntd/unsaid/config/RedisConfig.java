@@ -48,12 +48,15 @@ public class RedisConfig {
         template.setConnectionFactory(connectionFactory);
 
         template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
 
         template.setValueSerializer(new KryoRedisSerializer<>(FeedPostDTO.class));
+        template.setHashValueSerializer(new KryoRedisSerializer<>(FeedPostDTO.class));
 
         template.afterPropertiesSet();
         return template;
     }
+
 
 
 }

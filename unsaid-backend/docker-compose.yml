@@ -6,3 +6,13 @@ services:
     restart: unless-stopped
     volumes:
       - ./volumes/redis-dev/data:/data
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: unsaid-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # UI
+    environment:
+      RABBITMQ_DEFAULT_USER: unsaid
+      RABBITMQ_DEFAULT_PASS: unsaid
