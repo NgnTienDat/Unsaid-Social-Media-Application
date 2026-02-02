@@ -34,6 +34,7 @@ public class PostService {
     RedisRepository redisRepository;
     CloudinaryUploadService cloudinaryUploadService;
     ApplicationEventPublisher eventPublisher;
+    PostEventPublisher postEventPublisher;
     PostMapper postMapper;
 
     @Transactional
@@ -109,15 +110,14 @@ public class PostService {
 
         // Publish PostCreatedEvent
         if (post.getParentPost() == null) {
-            redisRepository.savePostToCache(post.getId(), postMapper.toFeedPostDTO(post));
-            eventPublisher.publishEvent(
-                    new PostCreatedEvent(
-                            post.getId(),
-                            post.getAuthor().getId(),
-                            post.getAuthor().getFollowerCount(),
-                            post.getCreatedAt()
-                    )
+            PostCreatedEvent event = new PostCreatedEvent(
+                    post.getId(),
+                    post.getAuthor().getId(),
+                    post.getAuthor().getFollowerCount(),
+                    post.getCreatedAt()
             );
+
+            postEventPublisher.publishPostCreated(event);
         }
 
         return postMapper.toResponse(post);

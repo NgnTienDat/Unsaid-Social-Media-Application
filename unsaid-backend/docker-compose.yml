@@ -8,8 +8,7 @@ services:
       - ./volumes/redis-dev/data:/data
 
   rabbitmq:
-    image: rabbitmq:3.13-management
-    container_name: unsaid-rabbitmq
+    image: rabbitmq:management-alpine
     ports:
       - "5672:5672"     # AMQP
       - "15672:15672"   # UI
