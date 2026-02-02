@@ -1,6 +1,7 @@
 package com.ntd.unsaid.application.listener;
 
 import com.ntd.unsaid.application.service.FeedService;
+import com.ntd.unsaid.application.service.NotificationService;
 import com.ntd.unsaid.domain.event.PostCreatedEvent;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,11 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostEventListener {
-    FeedService feedService;
 
-    @Async("taskExecutor")
+    FeedService feedService;
+    NotificationService notificationService;
+
+//    @Async("taskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
         feedService.fanOutToFollowers(
@@ -25,5 +28,11 @@ public class PostEventListener {
                 event.authorId(),
                 event.followerCount(),
                 event.createdAt().toEpochMilli());
+
+        notificationService.notifyPostCreated(
+                event.authorId(),
+                event.postId(),
+                event.createdAt().toEpochMilli()
+        );
     }
 }

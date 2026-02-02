@@ -23,7 +23,7 @@ public class KryoRedisSerializer<T> implements RedisSerializer<T> {
     private final Class<T> clazz;
 
     // Thread-safe pool of Kryo instances
-    private final Pool<Kryo> kryoPool = new Pool<>(true, false, 16) {
+    private final Pool<Kryo> kryoPool = new Pool<>(true, false, 128) {
         @Override
         protected Kryo create() {
             Kryo kryo = new Kryo();

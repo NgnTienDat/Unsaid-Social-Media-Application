@@ -89,4 +89,14 @@ public interface FollowRepository extends JpaRepository<Follow, String> {
     List<String> findFollowedCelebrityIds(@Param("followerId") String followerId);
 
     long countFollowerIdsByFollowingId(String followingId);
+
+
+    @Query("""
+                select u.email
+                from Follow f
+                join f.follower u
+                where f.following.id = :authorId
+            """)
+    List<String> findFollowerEmailsByFollowingId(String authorId);
+
 }

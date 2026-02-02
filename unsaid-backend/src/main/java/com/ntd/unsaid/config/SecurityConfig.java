@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -50,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_POST).permitAll()
                                 .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
+                                .requestMatchers("/ws/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 
@@ -60,6 +62,9 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
+
+        httpSecurity.headers(headers -> headers
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return httpSecurity.build();
     }

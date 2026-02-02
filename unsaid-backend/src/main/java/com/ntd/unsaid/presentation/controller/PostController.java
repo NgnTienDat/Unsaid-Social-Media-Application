@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class PostController {
             @RequestPart("data") @Valid PostCreationRequest request,
             @RequestPart(value = "media", required = false) List<MultipartFile> mediaFiles
     ) {
+
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

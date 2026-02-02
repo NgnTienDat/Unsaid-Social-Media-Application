@@ -1,5 +1,7 @@
 package com.ntd.unsaid.infrastructure.caching;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ntd.unsaid.application.dto.FeedPostDTO;
 import com.ntd.unsaid.application.mapper.PostMapper;
 import com.ntd.unsaid.domain.entity.Post;
@@ -40,6 +42,7 @@ public class RedisDataSeeder {
     UserRepository userRepository;
     // RedisRepository redisRepository;
     PostMapper postMapper;
+    ObjectMapper objectMapper;
 
 
     public void seedRedisForStressTest() {
