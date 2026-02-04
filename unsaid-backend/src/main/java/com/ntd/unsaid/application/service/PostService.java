@@ -14,6 +14,7 @@ import com.ntd.unsaid.application.mapper.PostMapper;
 import com.ntd.unsaid.domain.repository.PostRepository;
 import com.ntd.unsaid.domain.repository.UserRepository;
 import com.ntd.unsaid.infrastructure.caching.RedisRepository;
+import com.ntd.unsaid.infrastructure.messaging.producer.RabbitMQPublisher;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,7 +35,7 @@ public class PostService {
     RedisRepository redisRepository;
     CloudinaryUploadService cloudinaryUploadService;
     ApplicationEventPublisher eventPublisher;
-    PostEventPublisher postEventPublisher;
+    RabbitMQPublisher postEventPublisher;
     PostMapper postMapper;
 
     @Transactional

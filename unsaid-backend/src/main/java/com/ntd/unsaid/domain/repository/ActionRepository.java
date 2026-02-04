@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ActionRepository extends JpaRepository<Action, String> {
 
+    void deleteByUserIdAndPostIdAndActionType(String userId, String postId, String actionType);
+    boolean existsByUserIdAndPostIdAndActionType(String userId, String postId, String actionType);
 }

@@ -1,5 +1,7 @@
 package com.ntd.unsaid.config;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,6 +15,11 @@ public class RabbitMQConfig {
     public static final String POST_EXCHANGE = "post.exchange";
     public static final String POST_CREATED_QUEUE = "post.created.queue";
     public static final String POST_CREATED_ROUTING_KEY = "post.created";
+
+    public static final String ACTION_EXCHANGE = "action.exchange";
+    public static final String ACTION_QUEUE = "action.created.queue";
+    public static final String ACTION_ROUTING_KEY = "action.created";
+
 
     @Bean
     public TopicExchange postExchange() {

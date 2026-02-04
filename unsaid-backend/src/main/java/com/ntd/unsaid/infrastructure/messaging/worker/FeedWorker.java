@@ -1,4 +1,4 @@
-package com.ntd.unsaid.infrastructure.messaging;
+package com.ntd.unsaid.infrastructure.messaging.worker;
 
 import com.ntd.unsaid.application.service.FeedService;
 import com.ntd.unsaid.domain.event.PostCreatedEvent;

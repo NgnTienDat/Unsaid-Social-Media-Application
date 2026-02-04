@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ActionType {
-    LIKED("LIKED"),
+    LIKE("LIKE"),
+    UNLIKE("UNLIKE"),
     SAVED("SAVED");
 
     private final String value;
