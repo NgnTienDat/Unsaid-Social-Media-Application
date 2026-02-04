@@ -33,6 +33,7 @@ public enum ErrorCode {
     POST_CONTENT_OR_MEDIA_REQUIRED(1023, "Post content or media is required", HttpStatus.BAD_REQUEST),
     FILE_TOO_LARGE(1024, "File size is too large", HttpStatus.BAD_REQUEST),
     INVALID_FOLLOW_TYPE(1025, "Invalid follow type", HttpStatus.BAD_REQUEST),
+    REDIS_OPERATION_FAILED(1026, "Redis operation failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Validation: 2XXX
     INVALID_MESSAGE_KEY(2001, "Invalid Message Key", HttpStatus.BAD_REQUEST),

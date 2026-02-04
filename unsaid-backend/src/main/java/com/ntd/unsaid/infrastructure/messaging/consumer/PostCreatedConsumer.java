@@ -1,9 +1,9 @@
-package com.ntd.unsaid.application.listener;
+package com.ntd.unsaid.infrastructure.messaging.consumer;
 
 import com.ntd.unsaid.config.RabbitMQConfig;
 import com.ntd.unsaid.domain.event.PostCreatedEvent;
-import com.ntd.unsaid.infrastructure.messaging.FeedWorker;
-import com.ntd.unsaid.infrastructure.messaging.NotificationWorker;
+import com.ntd.unsaid.infrastructure.messaging.worker.FeedWorker;
+import com.ntd.unsaid.infrastructure.messaging.worker.NotificationWorker;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

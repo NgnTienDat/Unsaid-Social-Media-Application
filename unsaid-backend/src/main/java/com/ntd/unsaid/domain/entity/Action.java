@@ -34,8 +34,8 @@ public class Action {
 
     Instant createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = Instant.now();
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        createdAt = Instant.now();
+//    }
 }
