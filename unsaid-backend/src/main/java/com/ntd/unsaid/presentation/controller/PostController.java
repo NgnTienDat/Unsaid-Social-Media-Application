@@ -1,7 +1,9 @@
 package com.ntd.unsaid.presentation.controller;
 
+import com.ntd.unsaid.application.dto.request.ActionRequest;
 import com.ntd.unsaid.application.dto.request.PostCreationRequest;
 import com.ntd.unsaid.application.dto.response.PostResponse;
+import com.ntd.unsaid.application.service.ActionService;
 import com.ntd.unsaid.application.service.PostService;
 import com.ntd.unsaid.utils.ApiResponse;
 import com.ntd.unsaid.utils.ResponseUtils;
@@ -30,6 +32,7 @@ import java.util.List;
 public class PostController {
 
     PostService postService;
+    ActionService actionService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
@@ -42,6 +45,20 @@ public class PostController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ResponseUtils.created(postService.createPost(jwt.getSubject(), request, mediaFiles)));
+    }
+
+    @PostMapping("/action/like")
+    public ResponseEntity<ApiResponse<?>> likeOrUnlikePost(
+//            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam("id") String userId,
+            @RequestBody @Valid ActionRequest actionRequest
+            ) {
+
+//        actionService.likeOrUnlikePost(jwt.getSubject(), actionRequest);
+        actionService.likeOrUnlikePost(userId, actionRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ResponseUtils.created(null));
     }
 
 

@@ -20,4 +20,14 @@ public final class RedisKeys {
     public static String userPostTimeline(String authorId) {
         return "posts:user:" + authorId;
     }
+
+    public static String postLikeCount(String postId) {
+        return "posts:like_count:" + postId;
+    }
+    public static String dirtyPosts() {
+        return "sys:dirty_posts";
+    }
+    public static String userLiked(String postId) {
+        return "posts:liked_users:" + postId;
+    }
 }

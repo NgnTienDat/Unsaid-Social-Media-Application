@@ -5,6 +5,7 @@ import com.ntd.unsaid.domain.enums.*;
 import com.ntd.unsaid.domain.event.ActionMessage;
 import com.ntd.unsaid.exception.AppException;
 import com.ntd.unsaid.infrastructure.messaging.producer.RabbitMQPublisher;
+import com.ntd.unsaid.utils.RedisKeys;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -42,13 +43,13 @@ public class ActionService {
                     Long.class
             );
 
-    public String likeOrUnlikePostV2(String userId, ActionRequest actionRequest) {
+    public void likeOrUnlikePost(String userId, ActionRequest actionRequest) {
 
         String postId = actionRequest.getPostId();
 
-        String isLikedKey = "post:liked_users:" + postId;
-        String likeCountKey = "post:like_count:" + postId;
-        String dirtySetKey = "sys:dirty_posts";
+        String isLikedKey = RedisKeys.userLiked(postId); // key: posts:liked_users:{postId}
+        String likeCountKey = RedisKeys.postLikeCount(postId);
+        String dirtySetKey = RedisKeys.dirtyPosts();
 
         Long result = redisTemplate.execute(
                 LIKE_UNLIKE_SCRIPT,
@@ -73,7 +74,7 @@ public class ActionService {
 
         rabbitMQPublisher.publishActionMessage(actionMessage);
 
-        return actionType.getValue();
+//        return actionType.getValue();
     }
 
 

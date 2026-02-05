@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 public class ActionConsumer {
 
     ActionWorker actionWorker;
-    NotificationWorker notificationWorker;
 
     @RabbitListener(queues = RabbitMQConfig.ACTION_QUEUE)
     public void handle(ActionMessage message) {
