@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ActionType {
     LIKE("LIKE"),
     UNLIKE("UNLIKE"),
-    SAVED("SAVED");
+    SAVED("SAVED"),
+    UNSAVED("SAVE");
 
     private final String value;
 }

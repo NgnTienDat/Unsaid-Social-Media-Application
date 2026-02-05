@@ -8,7 +8,12 @@ import lombok.experimental.FieldDefaults;
 import java.time.Instant;
 
 @Entity
-@Table(name = "actions")
+@Table(name = "actions", uniqueConstraints = {
+        @UniqueConstraint(
+                name = "idx_actions_unique_interaction",
+                columnNames = {"user_id", "post_id", "action_type"}
+        )
+})
 @Getter
 @Setter
 @NoArgsConstructor

@@ -40,6 +40,25 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public TopicExchange actionExchange() {
+        return new TopicExchange(ACTION_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Queue actionCreatedQueue() {
+        return QueueBuilder.durable(ACTION_QUEUE).build();
+    }
+
+    @Bean
+    public Binding actionCreatedBinding() {
+        return BindingBuilder
+                .bind(actionCreatedQueue())
+                .to(actionExchange())
+                .with(ACTION_ROUTING_KEY);
+    }
+
+
+    @Bean
     public JacksonJsonMessageConverter jacksonConverter() {
         return new JacksonJsonMessageConverter();
     }

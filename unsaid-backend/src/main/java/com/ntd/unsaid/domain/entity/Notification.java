@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.Instant;
 
 @Entity
-@Table(name = "actions")
+@Table(name = "notifications")
 @Getter
 @Setter
 @NoArgsConstructor
