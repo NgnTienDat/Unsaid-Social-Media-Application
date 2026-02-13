@@ -33,7 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -203,5 +205,16 @@ public class UserService {
         return PageResponseUtils.build(pageFollows, Function.identity());
     }
 
-
+    public void exportUserIds() {
+        String csvFileName = "tenK_users.csv";
+        var userIds = userRepository.findNIds(10000);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(csvFileName))) {
+            for (String id : userIds) {
+                writer.printf("%s%n", id);
+            }
+            System.out.println("Đã xuất file CSV thành công: " + csvFileName);
+        } catch (IOException e) {
+            System.err.println("Lỗi khi ghi file: " + e.getMessage());
+        }
+    }
 }

@@ -37,3 +37,4 @@ build/
 .env
 volumes
 target_users.csv
+rabbitmq_data
