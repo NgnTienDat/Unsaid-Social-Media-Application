@@ -34,6 +34,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS_POST = {
             "/auth/login",  "/auth/logout", "/auth/introspect",
             "/api/v1/users", "/api/v1/admin/redis-data-seeder", "/api/v1/posts/action/like",
+            "/api/v1/admin/export-user-id",
     };
 
     private final String[] PUBLIC_ENDPOINTS_GET = {

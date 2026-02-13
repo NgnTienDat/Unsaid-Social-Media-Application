@@ -18,6 +18,4 @@ public class ActionRequest {
 
     @NotBlank(message = "Action type is required")
     String actionType;
-
-
 }

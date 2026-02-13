@@ -27,4 +27,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT u FROM User u WHERE u.followerCount < :threshold")
     List<User> findTopNormalUsers(@Param("threshold") long threshold, Pageable pageable);
+
+    // java
+    @Query(value = "SELECT id FROM users LIMIT :limit", nativeQuery = true)
+    List<String> findNIds(@Param("limit") int limit);
+
 }

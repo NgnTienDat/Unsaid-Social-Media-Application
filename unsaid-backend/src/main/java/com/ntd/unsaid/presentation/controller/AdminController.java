@@ -36,4 +36,11 @@ public class AdminController {
                 .body(ResponseUtils.created(null));
     }
 
+    @PostMapping("/export-user-id")
+    public ResponseEntity<ApiResponse<?>> exportUserId() {
+        userService.exportUserIds();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseUtils.created(null));
+    }
+
 }
