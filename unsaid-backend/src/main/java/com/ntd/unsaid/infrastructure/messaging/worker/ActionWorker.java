@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @Component
+@ConditionalOnProperty(name = "app.worker.enabled", havingValue = "true")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -43,7 +45,7 @@ public class ActionWorker {
     // messages are saved to DB
     @Scheduled(fixedDelay = 1000)
     public void flushByTime() {
-        log.warn("Flushing ActionWorker buffer by time :)))))))))");
+//        log.warn("Flushing ActionWorker buffer by time :)))))))))");
         flushInternal();
     }
 
@@ -60,7 +62,7 @@ public class ActionWorker {
 
         synchronized (buffer) {
             if (buffer.isEmpty()){
-                log.warn("NO ActionWorker buffer to flush");
+//                log.warn("NO ActionWorker buffer to flush");
                 return;
             }
             batch = new ArrayList<>(buffer);

@@ -1,0 +1,44 @@
+# IDE & System
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Build
+target/
+.mvn/
+mvnw
+mvnw.cmd
+
+# Git
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yml
+docker-compose.dev.yml
+.dockerignore
+
+# Config
+.env
+HELP.md
+
+# Runtime data
+rabbitmq_data/
+rabbitmq_log/
+volumes/
+
+# Logs
+*.log
+logs/
+
+# Misc
+README.md
+target_users.csv

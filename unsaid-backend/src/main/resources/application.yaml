@@ -1,40 +1,42 @@
-server:
-  tomcat:
-    threads:
-      max: 200  # Reduced from 1000 - too many threads cause CPU context switching overhead
-
+# ===================================================================
+# COMMON CONFIGURATION (Áp dụng cho cả API và Worker)
+# ===================================================================
 spring:
   application:
     name: unsaid-backend
+  threads:
+    virtual:
+      enabled: true
+  
+  # Tắt Open-in-view để ngăn chặn Database connection bị giữ quá lâu trong Controller
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update # Production nên dùng 'validate' hoặc 'none'
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        # Tối ưu Batch Insert/Update ở tầng Hibernate
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
 
+  # Cấu hình Database chung
   datasource:
     url: ${DBMS_CONNECTION}
     username: ${DBMS_USERNAME}
     password: ${DBMS_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      # Số lượng kết nối tối đa đến DB.
-      # PostgreSQL thường chịu được max_connections = 100 mặc định.
-      # Set pool size này lên 50 để tận dụng tối đa.
-      maximum-pool-size: 50
-      minimum-idle: 10
-  jpa:
-    hibernate:
-      ddl-auto: update  # Use 'validate' in production
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: false
-        jdbc:
-          batch_size: 25
-        order_inserts: true
-        order_updates: true
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 50MB
-      max-request-size: 200MB
+      # Timeout kết nối (30s)
+      connection-timeout: 30000
+      # Thời gian sống tối đa của một kết nối (30 phút)
+      max-lifetime: 1800000
+
+  # Cấu hình Redis (Lettuce Client) - Cần pool lớn để chịu tải Like/Count
   data:
     redis:
       host: ${REDIS_HOST}
@@ -42,25 +44,32 @@ spring:
       database: 0
       lettuce:
         pool:
-          max-active: 100   # Số kết nối tối đa cùng lúc
-          max-idle: 10     # Số kết nối rảnh tối đa giữ lại
-          min-idle: 5      # Số kết nối rảnh tối thiểu
-          max-wait: 1000ms # Thời gian chờ tối đa nếu pool bị đầy
+          max-active: 50   # Giảm xuống 50 để tránh tranh chấp quá nhiều
+          max-idle: 10
+          min-idle: 5
+          max-wait: 1000ms
+
+  # Cấu hình RabbitMQ Connection
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
-    listener:
-      simple:
-        prefetch: 10
-        concurrency: 2
-        max-concurrency: 5
+    cache:
+      channel:
+        size: 100 # Tăng lên để đủ phục vụ concurrent requests
+        checkout-timeout: 1000ms
+      connection:
+        mode: CHANNEL # Mặc định là CHANNEL, giữ nguyên
 
-logging:
-  level:
-    root: OFF
-    com.ntd.unsaid: OFF
+  # File Upload limit
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 200MB
+
+# Custom Configs
 auth:
   signer-key: ${SIGNER_KEY}
   valid-duration: 29
@@ -71,3 +80,76 @@ cloudinary:
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
 
+# Logging: Chỉ hiện Error để tối ưu I/O, Info cho Root để biết App start thế nào
+#logging:
+#  level:
+#    root: OFF
+#    com.ntd.unsaid: ERROR
+
+# ... (Phần COMMON CONFIG giữ nguyên) ...
+
+---
+# ===================================================================
+# PROFILE: API
+# ===================================================================
+spring:
+  config:
+    activate:
+      on-profile: api
+  datasource:
+    hikari:
+      maximum-pool-size: 10 # Ít connection DB
+      minimum-idle: 5
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false # Tắt Listener
+    publisher-returns: false # Đảm bảo tắt cái này để không chờ đợi
+    template:
+      mandatory: false # Fire and forget thực sự
+    cache:
+      connection:
+        mode: CHANNEL
+      channel:
+        size: 100    # <-- THÊM DÒNG NÀY (Đây mới là cái cần tăng để giảm CPU)
+        checkout-timeout: 1000ms
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 20
+
+app:
+  worker:
+    enabled: false # Cờ để Java @ConditionalOnProperty hoạt động
+
+---
+# ===================================================================
+# PROFILE: WORKER
+# ===================================================================
+spring:
+  main:
+    web-application-type: none
+  config:
+    activate:
+      on-profile: worker
+  datasource:
+    hikari:
+      maximum-pool-size: 30 # Nhiều connection DB để batch insert
+      minimum-idle: 10
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: true # Bật Listener
+        acknowledge-mode: auto
+        prefetch: 50
+        concurrency: 2
+        max-concurrency: 4
+
+server:
+  port: 0 # Random port
+
+app:
+  worker:
+    enabled: true # Cờ để Java @ConditionalOnProperty hoạt động

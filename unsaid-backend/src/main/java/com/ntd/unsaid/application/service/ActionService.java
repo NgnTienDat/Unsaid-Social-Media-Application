@@ -10,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
@@ -24,24 +23,10 @@ public class ActionService {
 
     StringRedisTemplate redisTemplate;
     RabbitMQPublisher rabbitMQPublisher;
+    RedisScript<Long> likeUnlikeScript;
 
-    private static final RedisScript<Long> LIKE_UNLIKE_SCRIPT =
-            new DefaultRedisScript<>(
-                    """
-                            if redis.call("SISMEMBER", KEYS[1], ARGV[1]) == 0 then
-                                redis.call("SADD", KEYS[1], ARGV[1])
-                                redis.call("INCR", KEYS[2])
-                                redis.call("SADD", KEYS[3], ARGV[2])
-                                return 1
-                            else
-                                redis.call("SREM", KEYS[1], ARGV[1])
-                                redis.call("DECR", KEYS[2])
-                                redis.call("SADD", KEYS[3], ARGV[2])
-                                return 0
-                            end
-                            """,
-                    Long.class
-            );
+
+
 
     public void likeOrUnlikePost(String userId, ActionRequest actionRequest) {
 
@@ -52,7 +37,7 @@ public class ActionService {
         String dirtySetKey = RedisKeys.dirtyPosts();
 
         Long result = redisTemplate.execute(
-                LIKE_UNLIKE_SCRIPT,
+                likeUnlikeScript,
                 List.of(isLikedKey, likeCountKey, dirtySetKey),
                 userId,
                 postId
@@ -62,8 +47,8 @@ public class ActionService {
             throw new AppException(ErrorCode.REDIS_OPERATION_FAILED);
         }
 
-        ActionType actionType =
-                (result == 1L) ? ActionType.LIKE : ActionType.UNLIKE;
+        ActionType actionType = (result == 1L) ? ActionType.LIKE : ActionType.UNLIKE;
+//        ActionType actionType = ActionType.LIKE;
 
         ActionMessage actionMessage = ActionMessage.builder()
                 .postId(postId)
@@ -74,7 +59,6 @@ public class ActionService {
 
         rabbitMQPublisher.publishActionMessage(actionMessage);
 
-//        return actionType.getValue();
     }
 
 
