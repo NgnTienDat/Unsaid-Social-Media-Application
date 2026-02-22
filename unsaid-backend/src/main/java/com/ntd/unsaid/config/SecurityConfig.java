@@ -40,6 +40,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS_GET = {
             "/api/v1/home/feed/slice",
             "/api/v1/home/feed",
+             "/api/v1/test/ping"
     };
 
     @Autowired

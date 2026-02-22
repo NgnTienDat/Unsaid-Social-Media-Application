@@ -20,35 +20,62 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '1.0'
+#          memory: 2G
     networks:
       - unsaid-network
 
   backend:
     build: .
-    container_name: unsaid-backend
+    image: unsaid-backend:latest
+    container_name: unsaid-api
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=api
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '4.0'
-          memory: 4G
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '4.0'
+#          memory: 4G
     ports:
       - "8080:8080"
     networks:
       - unsaid-network
-
+  worker:
+    image: unsaid-backend:latest # Dùng lại image vừa build ở trên
+    container_name: unsaid-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=worker # Kích hoạt profile Worker
+      - SERVER_PORT=0 # Tắt web server (hoặc chạy random port) để tiết kiệm resource
+    depends_on:
+      backend: # Đảm bảo backend build xong thì worker mới chạy
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '2.0'
+#          memory: 2G
+    networks:
+      - unsaid-network
   redis:
     image: redis:alpine
     container_name: unsaid-redis

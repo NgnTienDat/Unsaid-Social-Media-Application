@@ -61,7 +61,7 @@ public class PostCountSyncScheduler {
 
         try {
             int[] updateResult = jdbcTemplate.batchUpdate(sql, batchArgs);
-            log.info("Synced like_count for {} posts to Database.", updateResult.length);
+//            log.info("Synced like_count for {} posts to Database.", updateResult.length);
         } catch (Exception e) {
             log.error("Failed to sync post counts", e);
             // Fail-safe: Re-add IDs to dirty set for retry later. Ensure data consistency.
